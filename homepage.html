@@ -1,9 +1,61 @@
 {% extends "template.html" %}
+{% block content %}
 
 <head>
     <meta charset="UTF-8">
     <title>homepage</title>
 </head>
 <body>
+    <div class="col-sm-4">
+        <div class="frame">
+            <h2 class="text-center">About</H2>
+            <hr class="hr_border">
+            <p class="text_centered">
+                This website was constructed by four students of the Hanze University of applied sciences with the purpose of making a easily accessible way to both find new transcription factor binding sites and to check for the presence of them when the user gives a list of motifs to look for.
+                <br>
+                <br>
 
-</body>
+            </p>
+
+        </div>
+    </div>
+
+    <div class="col-sm-4">
+
+        <div class="frame">
+            <h2 class="text-center">MEME</h2>
+            <hr class="hr_border">
+            <p class="text_centered" >
+                MEME is short for: “Multiple Em for Motif Elicitation” and is used to discover new motifs in multi-fasta files. The sequences in this fasta file can for example be related proteins from different organisms. These sequences will be used to find consensus regions, that means that there are certain short sequences of 4 to 20 nucleotides that occur in more than one of these sequences. The larger the amount of sequences within the muli-fasta, the more likely it is that the motif was not a result of pure chance. To quantify these statistics, found motifs are given a P-value. The lower the P-value the higher the statistical significance.
+
+                To use MEME, there are several parameters that should be configured. Next to every text-box or radio button, there is a default value to get started. Many of the parameters depend on the given sequence, for example the sequence alphabet: It can be either DNA, RNA or protein.
+                MEME looks for ungapped motifs, this means that there are no nucleotides that are not part of a motif in between two parts of the same motif. If the user does need to find gapped motifs, there are different algorithms that can be used like GLAM2 but this is beyond the scope of this website.
+
+
+                For further reference, see this paper:
+                <a target="_blank" ref="//www.ncbi.nlm.nih.gov/pmc/articles/PMC2703892/"> ncbi meme explanation</a>"
+                It is about all of the tools that comprise the MemeSuite.
+
+
+            </p>
+        </div>
+    </div>
+
+    <div class="col-sm-4">
+        <div class="frame">
+            <h2 class="text-center" >FIMO</h2>
+            <hr class="hr_border">
+            <p class="text_centered">
+                FIMO is the abbreviation for: “Find Individual Motif Occurrences” and it is used to check for the presence of motifs in a given sequence the FIMO tool can be used. It requires a multi-fasta and using a motif file as input. The sequences in the multi-fasta will only be checked for motifs that are present in this motif file.
+                This motif file can be either a .html or .txt output file from a motif discovery tool like MEME, STREME or DREME (other tools similar to MEME) and is formatted as a MEME motif format.
+
+                Just like with MEME, the results of FIMO are returned with a p-value. The user can also filter the output so that results that are not statistically significant are ignored.
+                <br>
+                <br>
+                More about the possible parameters on FIMO’s tool-page.
+                <a target="_blank" href="https://meme-suite.org/meme/doc/fimo.html">FIMO-aboutpage</a>
+            </p>
+        </div>
+    </div>
+
+{% endblock %}
