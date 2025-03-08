@@ -1,4 +1,44 @@
-h1 {color: rgb(0, 0, 0); text-align: center}
-p {
- color: rgb(0, 0, 0);
- text-align: center;}
+.navbar {
+font-size: 20px;
+color: rgb(0, 0, 0);
+text-align: center;
+}
+
+.header {
+font-size: 40px;
+color: rgb(0, 0, 0);
+text-align: center;
+}
+
+.description {
+font-size: 20px;
+color: rgb(0, 0, 0);
+position: absolute;
+top: 80px;
+left: 400px;
+right: 400px;
+}
+
+.groups {
+font-size: 20px;
+color: rgb(0, 0, 0);
+position: absolute;
+top: 200px;
+left: 525px;
+}
+
+.questions {
+font-size: 20px;
+color: rgb(0, 0, 0);
+position: absolute;
+top: 320px;
+left: 400px;
+}
+
+.question_examples {
+font-size: 20px;
+color: rgb(0, 0, 0);
+position: absolute;
+top: 350px;
+left: 525px;
+}
