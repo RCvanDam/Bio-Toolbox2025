@@ -1,6 +1,8 @@
-from flask import Flask, render_template
+from urllib import request
 
-app = Flask(__name__)
+from flask import Flask, request, render_template
+
+app = Flask(__name__, template_folder="templates")
 
 
 @app.route("/kegg_home")
@@ -13,6 +15,16 @@ def kegg_home():
 
     return render_template("home_html.html", questions=questions)
 
+@app.route("/kegg_tool", methods=["GET", "POST"])
+def kegg_tool():
+    if request.method == "GET":
+        return render_template("tool_GET.html")
+    elif request.method == "POST":
+        kwargs = {
+            "the_single_kegg_id": request.form["the_single_kegg_id"],
+            "the_multiple_kegg_id": request.form["the_multiple_kegg_id"]
+        }
+        return render_template("tool_POST.html", **kwargs)
 
 if __name__ == "__main__":
     app.debug = True
