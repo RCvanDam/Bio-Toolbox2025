@@ -1,0 +1,41 @@
+<!-- Sources:
+Link: https://www.w3schools.com/html/
+
+Paper book:
+Title: HTML5 en CSS3 (5th edition)
+Author: Peter Doolaard
+Publishing house: Van Duuren Media
+--><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/home_css.css">
+    <title>Map My KEGG</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="/kegg_tool">KEGG tools</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/home_html">Homepage</a>
+    </div>
+
+    <div class="container">
+        <div class="header"> Map My KEGG</div>
+        <div class="subtext">
+            A useful website for various groups within the life sciences.
+        </div>
+        <img src="https://www.genome.jp/kegg/docs/fig/kegg_model.png" alt="KEGG Pathway map">
+    </div>
+
+    <div class="intersection">
+        <h2>What is Map My KEGG?</h2>
+        <ul>
+            {% for question in questions %}
+                <li>{{ question }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
