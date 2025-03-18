@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Map My KEGG{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='contact_style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="header">Contact Us</div>
+    <div class="subtext">Need assistance? Reach out to one of our team members below.</div>
+
+    <div class="contact-container">
+        <h2>Our Team</h2>
+
+        <div class="contact-card">
+            <h4 class="contact-heading">Emiel Bosma</h4>
+            <p>GitHub: emielbosma</p>
+        </div>
+
+        <div class="contact-card">
+            <h4 class="contact-heading">Michelle Hazeveld</h4>
+            <p>GitHub: michellehazeveld</p>
+        </div>
+
+        <div class="contact-card">
+            <h4 class="contact-heading">Keren Saint Fleur</h4>
+            <p>GitHub: Keren8272</p>
+        </div>
+
+        <div class="contact-card">
+            <h4 class="contact-heading">Ruben van Dam</h4>
+            <p>GitHub: RCvanDam</p>
+        </div>
+    </div>
+{% endblock %}
