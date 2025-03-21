@@ -9,16 +9,16 @@ Publishing house: Van Duuren Media
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../static/home_css.css">
+    <link rel="stylesheet" href="../static/home.css">
     <title>Map My KEGG</title>
 </head>
 
 <body>
     <div class="navbar">
-        <a href="home_html.html" class="active">Home</a>
-        <a href="tool.html">KEGG Tools</a>
-        <a href="about.html">About Us</a>
-        <a href="contact.html">Contact Info</a>
+        <a href="/kegg_tool">KEGG tools</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/home_html">Homepage</a>
     </div>
 
     <div class="container">
@@ -31,15 +31,6 @@ Publishing house: Van Duuren Media
 
     <div class="intersection">
         <h2>What is Map My KEGG?</h2>
-        <h3>
-            Map My KEGG is a website that uses KEGG pull and KEGG mapper tools. KEGG is a database used to understand
-            high-level (cell level or higher) functions and the practical use of biological systems, such as the cell,
-            organism, and ecosystem—based on molecular-level information (GenomeNet, n.d.). This information is
-            primarily obtained from large-scale molecular datasets derived from genome sequencing and other
-            high-throughput (partially automated, efficient) experimental technologies. The website provides options for
-            analyzing and visualizing biological data at different levels. Some questions that can be answered with the
-            website and the tools are:
-        </h3>
         <ul>
             {% for question in questions %}
                 <li>{{ question }}</li>

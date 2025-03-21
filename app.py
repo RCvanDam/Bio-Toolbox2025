@@ -1,10 +1,11 @@
-from urllib import request
+from flask import *
 
-from flask import Flask, request, render_template
+app = Flask(__name__)
 
-app = Flask(__name__, template_folder="templates")
-
-
+@app.route("/")
+def default_route():
+    # Redirect to /kegg_home on the first visit
+    return redirect("/kegg_home")
 @app.route("/kegg_home")
 def kegg_home():
     questions = ["Which genes are involved in specific biological pathways and processes?", "How are certain metabolic \
@@ -14,18 +15,28 @@ def kegg_home():
     reactions are related to specific chemical compounds or enzymes?"]
 
     return render_template("home_html.html", questions=questions)
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
 
 @app.route("/kegg_tool", methods=["GET", "POST"])
 def kegg_tool():
-    if request.method == "GET":
-        return render_template("tool_GET.html")
-    elif request.method == "POST":
-        kwargs = {
-            "the_single_kegg_id": request.form["the_single_kegg_id"],
-            "the_multiple_kegg_id": request.form["the_multiple_kegg_id"]
-        }
-        return render_template("tool_POST.html", **kwargs)
+    if request.method == "POST":
+        number = request.form["number"]
+        if not number:
+            return "error: no number entered", 400
+        return render_template("kegg_tool.html", number=number)
+    return render_template("kegg_tool.html", number=None)
+
 
 if __name__ == "__main__":
     app.debug = True
     app.run()
+
+if __name__ == '__main__':
+    app.run(debug=True)
