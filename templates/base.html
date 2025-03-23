@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <link rel="stylesheet" type="text/css" href="../static/general.css">
+</head>
+
+<body>
+    <ul>
+        <li><a href="{{ url_for('kegg_home') }}">Home</a></li>
+        <li><a href="{{ url_for('about') }}">About Us</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact Info</a></li>
+        <li><a href="{{ url_for('kegg_tool') }}">KEGG tools</a></li>
+    </ul>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,15 @@
+.navbar {
+    background-color: #2c3e50 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 15px !important;
+}
+
+footer {
+    background-color: #2c3e50 !important;
+    color: white !important;
+    padding: 15px 0 !important;
+    text-align: center !important;
+    margin-top: 50px !important;
+}

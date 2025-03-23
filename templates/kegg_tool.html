@@ -19,13 +19,16 @@
         defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"
     ></script>
-    <link rel="stylesheet" href="static/kegg_tools.css">
+    <link rel="stylesheet" href="../static/kegg_tool.css">
+    <link rel="stylesheet" href="../static/general.css">
 </head>
+{% extends "base.html" %}
+{% block content %}
 <body onload="showPopup()">
 
     <!-- Navbar -->
     <div class="navbar">
-        <a href="/kegg_home">Home</a>
+        <a href="/home">Home</a>
         <a href="/kegg_tool" class="active">KEGG Tools</a>
         <a href="/about">About Us</a>
         <a href="/contact">Contact Info</a>
@@ -83,5 +86,13 @@
             </div>
         </div>
     </div>
+
+    <footer>
+        <p>
+            &copy; 2025 Map My KEGG. All rights reserved.
+        </p>
+    </footer>
 </body>
 </html>
+{% endblock %}
+
