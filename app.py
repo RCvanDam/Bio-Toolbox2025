@@ -1,6 +1,6 @@
 from flask import *
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
 @app.route("/")
 def default_route():
@@ -14,7 +14,7 @@ def kegg_home():
     known biological pathways?", "What molecular mechanisms underlie certain diseases?", "Which biochemical \
     reactions are related to specific chemical compounds or enzymes?"]
 
-    return render_template("home_html.html", questions=questions)
+    return render_template("kegg_home.html", questions=questions)
 @app.route('/about')
 def about():
     return render_template('about.html')
