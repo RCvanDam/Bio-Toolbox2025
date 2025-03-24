@@ -3,7 +3,7 @@ from flask import *
 app = Flask(__name__, template_folder="templates")
 
 
-@app.route("/home")
+@app.route("/")
 def kegg_home():
     """This function contains a list of questions that could be
     answered with our website and tool, and represents the homepage in
