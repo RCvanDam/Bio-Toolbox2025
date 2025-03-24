@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="header"> Map My KEGG</div>
+        <div class="subtext">
+            A useful website for various groups within the life sciences.
+        </div>
+            <img src="https://www.genome.jp/kegg/docs/fig/kegg_model.png" alt="KEGG Pathway map">
+    </div>
+
+    <div class="intersection">
+        <h2>What is Map My KEGG?</h2>
+        <ul>
+            {% for question in questions %}
+                <li>{{ question }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="container">
+        <a href="/kegg_tool" class="cta-button">Explore Tools</a>
+    </div>
+
+    <footer>
+        <p>
+            &copy; 2025 Map My KEGG. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
+
+{% endblock %}
