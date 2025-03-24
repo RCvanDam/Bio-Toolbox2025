@@ -47,3 +47,18 @@ footer {
     color: #2c3e50;
     margin-bottom: 20px;
 }
+
+.intersection {
+    text-align: center;
+    padding: 40px 20px;
+    border-radius: 100px;
+}
+
+.intro-section {
+    text-align: center;
+    padding: 15px;
+}
+.contact-container {
+    text-align: center;
+    padding: 15px;
+}
