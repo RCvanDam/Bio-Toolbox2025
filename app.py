@@ -1,4 +1,4 @@
-from flask import *
+from flask import Flask, render_template, request
 
 app = Flask(__name__, template_folder="templates")
 
@@ -37,12 +37,12 @@ def contact():
 
 @app.route("/kegg_tool", methods=["GET", "POST"])
 def kegg_tool():
+    number = None
     if request.method == "POST":
         number = request.form["number"]
         if not number:
             return "error: no number entered", 400
-        return render_template("kegg_tool.html", number=number)
-    return render_template("kegg_tool.html", number=None)
+    return render_template("kegg_tool.html", number=number)
 
 
 if __name__ == '__main__':
