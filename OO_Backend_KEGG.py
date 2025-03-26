@@ -5,10 +5,13 @@ Version: 1.0
 Date: 25/03/2025
 """
 
+
 from flask import Flask, request, jsonify  # imports the library flask and its associated parts
 import subprocess
 
+
 app = Flask(__name__)
+
 
 class Kmapper:
     def __init__(self, input_file, output_file, tool="kegg-mapper"):
@@ -21,6 +24,7 @@ class Kmapper:
         self.tool = tool
         self.input_file = input_file
         self.output_file = output_file
+
 
     def run(self):
         """
@@ -39,12 +43,14 @@ class Kmapper:
         except subprocess.CalledProcessError as e:
             return {"success": False, "error": e.stderr}
 
+
     def __str__(self):
         """
         Gives a string representation of the object, useful for debugging purposes
         :return: string representation of the object
         """
         return f"Kmapper(tool= '{self.tool}', input_file= '{self.input_file}', output_file= '{self.output_file}')"
+
 
     @app.route("/run_kmapper", methods=["POST"])
     def run_kmapper(self):
@@ -65,6 +71,7 @@ class Kmapper:
         kmapper = Kmapper(input_file, output_file)
         result = kmapper.run()
         return jsonify(result)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
