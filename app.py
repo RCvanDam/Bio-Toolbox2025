@@ -58,3 +58,4 @@ def kegg_tool():
 if __name__ == '__main__':
     # Setting debug to True will restart the server on each change
     app.run(debug=True)
+
