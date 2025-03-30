@@ -1,18 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Map My KEGG</title>
-    <link rel="stylesheet" href="../static/general.css">
-</head>
-<body>
-    <div class="navbar">
-        <a href="/">Home</a>
-        <a href="/kegg_tool">KEGG Tools</a>
-        <a href="/about_us" class="active">About Us</a>
-        <a href="/contact">Contact Info</a>
-    </div>
+{% extends "base.html" %}
+
+{% block content %}
 
     <div class="container">
         <div class="header">Behind Map My KEGG</div>
@@ -85,5 +73,4 @@
             &copy; 2025 Map My KEGG. All rights reserved.
         </p>
     </footer>
-</body>
-</html>
+{% endblock %}

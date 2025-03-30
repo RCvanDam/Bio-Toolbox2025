@@ -1,18 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="../static/general.css">
-    <title>Home - Map My KEGG</title>
-</head>
+{% extends "base.html" %}
 
-<body>
-    <div class="navbar">
-        <a href="/" class="active">Home</a>
-        <a href="/kegg_tool">KEGG Tools</a>
-        <a href="/about_us" >About Us</a>
-        <a href="/contact">Contact Info</a>
-    </div>
+{% block content %}
 
     <div class="container">
         <div class="header"> Map My KEGG</div>
@@ -42,3 +30,5 @@
     </footer>
 </body>
 </html>
+
+{% endblock %}
