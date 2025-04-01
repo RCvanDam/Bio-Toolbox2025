@@ -60,7 +60,7 @@ class KEGGHandler:
             may be needed for different pathway types or irregular data formats.
         """
         nodes, edges = [], []
-        # print(kegg_data)
+        print(kegg_data)
         # Extract genes and compounds as nodes
         for line in kegg_data.split("\n"):
             if line.startswith("GENE"):
