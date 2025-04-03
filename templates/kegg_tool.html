@@ -18,93 +18,76 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Main Container -->
-<div class="container">
-    <!-- Section for Inputting a Number -->
-    <div class="row justify-content-center">
-        <div class="col-sm-4">
-            <div class="frame_tool_top_left">
-                <h1 class="center_text">Enter a Number</h1>
-                <hr class="hr_border">
-                <form method="POST" action="/kegg_tool">
-                    <label for="number" class="form-label">
-                        Enter a Number:
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-4">
+                <!-- Form Container Styled Like Other Boxes -->
+                <div class="frame_tool_top_left">
+                    <h1 class="center_text">Enter a Number</h1>
+                    <hr class="hr_border">
+                    <form method="POST" action="/kegg_tool">
+                        <label for="number"  class="form-label">
+                            Enter a Number:
+                        </label>
+                        <input type="number" id="number" name="number" class="form-control mb-3" required>
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if number %}
+        <div class="row justify-content-center mt-3">
+            <div class="col-sm-4">
+                <div class="alert alert-info text-center">
+                    You entered the number: {{ number }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Existing Content -->
+        <div class="row justify-content-center">
+            <div class="col-sm-4">
+                <div class="frame_tool_top_left">
+                    <h1 class="center_text">KEGG_pull</h1>
+                    <hr class="hr_border">
+                    <a title="run one of the given commands down here">
+                        <p>Select the method that you want to use and adjust the optional parameters.</p>
+                    </a>
+                    <br>
+                    <button type="button" onclick="showModal('SinglePull')" class="btn btn-light">?</button>
+                    <label for="single_kegg_id" title="put the KEGG_ID you want the program to find in the KEGG database here">
+                        The KEGG_id to look for:
                     </label>
-                    <input type="number" id="number" name="number" class="form-control mb-3" required>
-                    <button type="submit" class="btn btn-primary w-100">Submit</button>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    {% if number %}
-    <div class="row justify-content-center mt-3">
-        <div class="col-sm-4">
-            <div class="alert alert-info text-center">
-                You entered the number: {{ number }}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- KEGG Pull Section -->
-    <div class="row justify-content-center">
-        <div class="col-sm-6">
-            <div class="frame_tool_top_left">
-                <h1 class="center_text">KEGG_pull</h1>
-                <hr class="hr_border">
-                <p>Select the method that you want to use and adjust the optional parameters.</p>
-                <form method="POST" action="/kegg_tool">
-                    <!-- Single KEGG ID -->
-                    <div class="mb-3">
-                        <label for="single_kegg_id" class="form-label" title="Enter the KEGG ID you want to fetch">
-                            KEGG ID to Look For:
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">KEGG ID</span>
-                            <input type="text" class="form-control" id="single_kegg_id" name="single_kegg_id" required>
-                        </div>
+                    <div class="input-group input-group-ml mb-3">
+                        <span class="input-group-text" id="single_keggs">Input Number</span>
+                        <input type="number" class="form-control" aria-label="Sizing example input" id="single_kegg_id"
+                               name="the_single_kegg_id">
                     </div>
-
-                    <!-- Multiple KEGG IDs -->
-                    <div class="mb-3">
-                        <label for="multiple_kegg_id" class="form-label" title="Enter KEGG IDs separated by commas">
-                            KEGG IDs (comma-separated):
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">KEGG IDs</span>
-                            <input type="text" class="form-control" id="multiple_kegg_id" name="multiple_kegg_id">
-                        </div>
+                    <button type="button" onclick="showModal('SinglePull')" class="btn btn-light">?</button>
+                    <label for="multiple_kegg_id" title="put the KEGG_IDs you want the program to find in the KEGG database here">
+                        The KEGG_ids to look for:
+                    </label>
+                    <div class="input-group input-group-ml mb-3">
+                        <span class="input-group-text" id="multiple_keggs">Input Number</span>
+                        <input type="number" class="form-control" aria-label="Sizing example input" id="multiple_kegg_id"
+                               name="the_multiple_kegg_id">
                     </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn btn-success w-100">Fetch Pathway</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
-    {% if image %}
-    <!-- Visualization Section -->
-    <div class="row justify-content-center mt-3">
-        <div class="col-sm-8 text-center">
-            <h2>Generated Pathway Visualization</h2>
-            <img src="{{ image }}" alt="KEGG Pathway Visualization" class="img-fluid">
-        </div>
-    </div>
-    {% endif %}
-
-    {% if message %}
-    <!-- Message Section -->
-    <div class="row justify-content-center mt-3">
-        <div class="col-sm-8">
-            <div class="alert alert-info text-center">
-                {{ message }}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-</div>
-
+    <footer>
+        <p>
+            &copy; 2025 Map My KEGG. All rights reserved.
+        </p>
+    </footer>
+</body>
+</html>
 {% endblock %}
+
