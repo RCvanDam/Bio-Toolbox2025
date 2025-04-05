@@ -1,157 +1,109 @@
 import os
 from bioservices import KEGG
-import matplotlib.pyplot as plt
-import networkx as nx  # For creating pathway graphs
 
+class GeneHandler:
+    def __init__(self, genes):
+        self.genes = genes
+        self.kegg_service = KEGG()
 
-class KEGGHandler:
-    """
-    Handles interactions with the KEGG database via bioservices.
-
-    Methods:
-        fetch_pathway_data(kegg_id): Fetches pathway data for a given KEGG ID.
-        parse_pathway_data(kegg_data): Parses KEGG pathway data into nodes and edges for visualization.
-    """
-
-    def __init__(self):
+    def get_kegg_ids(self):
         """
-        Initializes the KEGGHandler with bioservices' KEGG module.
-        """
-        self.kegg = KEGG()
-
-    def fetch_pathway_data(self, kegg_id):
-        """
-        Fetch pathway data for the given KEGG ID using the KEGG API.
-
-        Args:
-            kegg_id (str): The KEGG pathway ID provided by the user (e.g., 'hsa00010').
+        Maps multiple genes to their corresponding KEGG IDs.
 
         Returns:
-            str: Raw pathway data fetched dynamically from the KEGG database.
+            dict: A dictionary where keys are genes and values are their KEGG IDs.
+        """
+        gene_to_kegg = {}
+        try:
+            for gene in self.genes:
+                result = self.kegg_service.find("genes", gene)
+                if result:
+                    for line in result.split("\n"):
+                        if line.startswith("genes"):
+                            kegg_id = line.split()[1]  # Extract KEGG ID
+                            gene_to_kegg[gene] = kegg_id
+                            break
+            return gene_to_kegg
+        except Exception as e:
+            raise Exception(f"Error retrieving KEGG IDs: {str(e)}")
+
+    def get_pathway_ids(self, kegg_ids):
+        """
+        Retrieves pathway IDs associated with multiple KEGG IDs.
+
+        Args:
+            kegg_ids (list): A list of KEGG IDs.
+
+        Returns:
+            dict: A dictionary where keys are KEGG IDs and values are their pathway IDs.
+        """
+        kegg_to_pathways = {}
+        try:
+            for kegg_id in kegg_ids:
+                pathway_data = self.kegg_service.get_pathway_by_gene(kegg_id)
+                pathways = []
+                for line in pathway_data.split("\n"):
+                    if line.startswith("path:"):
+                        pathways.append(line.split()[0].replace("path:", ""))
+                kegg_to_pathways[kegg_id] = pathways
+            return kegg_to_pathways
+        except Exception as e:
+            raise Exception(f"Error retrieving pathway IDs: {str(e)}")
+
+    def get_pathway_ids(self, kegg_id):
+        """
+        Retrieves pathway IDs associated with a given KEGG ID.
+
+        Args:
+            kegg_id (str): The KEGG ID for the gene.
+
+        Returns:
+            list: A list of pathway IDs associated with the gene.
         """
         try:
-            data = self.kegg.get(kegg_id)  # Query the KEGG API
-            if not data:
-                raise ValueError(f"No data found for pathway ID: {kegg_id}")
-            return data
+            pathway_data = self.kegg_service.get_pathway_by_gene(kegg_id)
+            pathway_ids = []
+            for line in pathway_data.split("\n"):
+                if line.startswith("path:"):
+                    pathway_ids.append(line.split()[0].replace("path:", ""))
+            return pathway_ids
         except Exception as e:
-            raise Exception(f"Error fetching pathway data: {str(e)}")
-
-    def parse_pathway_data(self, kegg_data):
-        """
-        Parses the raw KEGG pathway data to extract nodes and edges for graph visualization.
-
-        Args:
-            kegg_data (str): Raw pathway data retrieved from the KEGG database.
-
-        Returns:
-            tuple: A tuple containing:
-                - nodes (list): A list of unique nodes extracted from the pathway. Nodes may represent genes or compounds.
-                - edges (list): A list of edges (relationships) between nodes in the pathway.
-
-        Example:
-            For a pathway with gene and compound relationships, nodes will include gene IDs
-            (e.g., `10327` for AKR1A1) and compound IDs (e.g., `C00022` for pyruvate).
-            Edges may represent associations between related genes, compounds, or pathways.
-
-        Notes:
-            This method assumes a specific structure of the raw KEGG data, including sections like
-            'GENE', 'COMPOUND', and potentially 'REL_PATHWAY' for relationships. Adjustments
-            may be needed for different pathway types or irregular data formats.
-        """
-        nodes, edges = [], []
-        print(kegg_data)
-
-        # Extract genes and compounds as nodes
-        for line in kegg_data.split("\n"):
-            if line.startswith("GENE"):
-                parts = line.split()
-                nodes.append(parts[1])  # Add gene IDs as nodes
-            elif line.startswith("COMPOUND"):
-                parts = line.split()
-                nodes.append(parts[1])  # Add compound IDs as nodes
-
-            # Add edges based on relationships (if RELATION or REL_PATHWAY data exists)
-            if line.startswith("REL_PATHWAY"):
-                related_pathways = line.split()
-                edges.append((related_pathways[0], related_pathways[1]))  # Add pathway relationships as edges
-
-        return nodes, edges
+            raise Exception(f"Error retrieving pathway IDs: {str(e)}")
 
 
-class PathwayVisualizer:
+class PathwayGenerator:
     """
-    Visualizes KEGG pathways using Matplotlib and NetworkX.
-
-    Methods:
-        create_graph(nodes, edges, output_file): Creates a pathway graph and saves it as an image file.
+    Handles interactions with KEGG to generate and save pathway maps.
     """
 
     def __init__(self):
         """
-        Initializes the PathwayVisualizer.
+        Initializes the PathwayGenerator with the KEGG service.
         """
-        pass
+        self.kegg_service = KEGG()
 
-    def create_graph(self, nodes, edges, output_file):
+    def save_pathway(self, pathway_id, file_name, highlighted_genes):
         """
-        Creates and saves a graph of the pathway based on nodes and edges.
+        Generates and saves a KEGG pathway map with highlighted genes.
 
         Args:
-            nodes (list): List of nodes in the pathway (e.g., enzymes, compounds).
-            edges (list): List of edges representing relationships between nodes.
-            output_file (str): File path where the graph image will be saved.
+            pathway_id (str): The KEGG pathway ID (e.g., 'ko00340').
+            file_name (str): Name of the output file (e.g., 'pathway.png').
+            highlighted_genes (list): List of KEGG IDs to highlight.
 
         Returns:
-            None: The graph is saved as an image file.
-        """
-        G = nx.DiGraph()  # Create a directed graph
-        G.add_nodes_from(nodes)
-        G.add_edges_from(edges)
-
-        plt.figure(figsize=(12, 8))
-        nx.draw(G, with_labels=True, node_color="skyblue", font_size=8, node_size=500)
-        plt.title("KEGG Pathway Visualization")
-        plt.savefig(output_file)
-
-
-class Backend:
-    """
-    Combines KEGGHandler and PathwayVisualizer to process user requests and generate pathway maps.
-
-    Methods:
-        process_request(kegg_id, output_file): Fetches, parses, and visualizes KEGG pathway data.
-    """
-
-    def __init__(self):
-        """
-        Initializes the Backend with KEGGHandler and PathwayVisualizer instances.
-        """
-        self.kegg_handler = KEGGHandler()
-        self.visualizer = PathwayVisualizer()
-
-    def process_request(self, kegg_id, output_file):
-        """
-        Processes a user request to fetch pathway data, parse it, and generate a pathway visualization.
-
-        Args:
-            kegg_id (str): The KEGG pathway ID input by the user (e.g., 'hsa00010').
-            output_file (str): Path to save the generated pathway graph image.
-
-        Returns:
-            None: Generates and saves the graph image to the specified file path.
+            None
         """
         try:
-            # Ensure the directory for the output file exists
-            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            # Ensure the `output` folder exists
+            output_folder = "output"
+            os.makedirs(output_folder, exist_ok=True)
 
-            # Fetch pathway data dynamically using the KEGG API
-            kegg_data = self.kegg_handler.fetch_pathway_data(kegg_id)
+            # Build the full path for the output file
+            output_path = os.path.join(output_folder, file_name)
 
-            # Parse the data into nodes and edges
-            nodes, edges = self.kegg_handler.parse_pathway_data(kegg_data)
-
-            # Generate the pathway visualization
-            self.visualizer.create_graph(nodes, edges, output_file)
+            # Save pathway map as an image
+            self.kegg_service.save_pathway(pathway_id, output_path, keggid=highlighted_genes)
+            print(f"Pathway map saved to {output_path}")
         except Exception as e:
-            raise Exception(f"Error processing pathway ID {kegg_id}: {str(e)}")
+            raise Exception(f"Error generating pathway map: {str(e)}")
