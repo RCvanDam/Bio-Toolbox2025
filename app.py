@@ -1,61 +1,101 @@
 from flask import Flask, render_template, request
-from backend import Backend  # Importing the Backend class for KEGG functionality
-
+from werkzeug.utils import secure_filename
+from backend import GeneHandler, PathwayGenerator
+import os
+from werkzeug.middleware.profiler import ProfilerMiddleware
+# Initialize the Flask app
 app = Flask(__name__, template_folder="templates")
-backend = Backend()  # Initialize the Backend instance
+
+# Ensure the "uploads" and "output" folders exist
+os.makedirs("uploads", exist_ok=True)
+os.makedirs("output", exist_ok=True)
+
 
 @app.route("/")
 def kegg_home():
-    """This function contains a list of questions that could be
-    answered with our website and tool, and represents the homepage in
-    which the questions below are shown."""
+    """Homepage with a list of questions about biological pathways."""
     questions = [
         "Which genes are involved in specific biological pathways and processes?",
         "How are certain metabolic pathways organized, and which enzymes play a role in them?",
         "What are the orthologous genes of different species for a given function?",
         "How can experimental data (e.g., gene expression) be integrated with known biological pathways?",
         "What molecular mechanisms underlie certain diseases?",
-        "Which biochemical reactions are related to specific chemical compounds or enzymes?"
     ]
-
     return render_template("home.html", questions=questions)
+
 
 @app.route('/about')
 def about():
-    """This function represents the about page. The about page gives a
-    description of who we are, what the purpose of our website is and a
-    short description of the tools we use."""
+    """About page with details about the project and tools used."""
     return render_template('about.html')
+
 
 @app.route('/contact')
 def contact():
-    """This function represents the contact page. The contact page shows
-    our first and last names, and our usernames of GitHub."""
+    """Contact page with team details."""
     return render_template('contact.html')
+
 
 @app.route("/kegg_tool", methods=["GET", "POST"])
 def kegg_tool():
-    image = None
-    message = None
+    """
+    Handles input from the KEGG Tool page and interacts with the backend
+    to find pathways and generate pathway maps.
+    """
+    result = None
+    error = None
 
     if request.method == "POST":
-        single_kegg_id = request.form.get("single_kegg_id")  # Single KEGG ID
+        genes_input = request.form.get("genes")  # Text input field for genes
+        uploaded_file = request.files.get("gene_file")  # File upload field
 
-        if single_kegg_id:
-            output_file = "output/pathway.png"  # Updated path to save the KEGG pathway graph
-            try:
-                backend.process_request(single_kegg_id, output_file)  # Use the backend to process KEGG ID
-                image = output_file
-                message = "Pathway visualization generated successfully!"
-            except Exception as e:
-                message = f"Error: Unable to process the KEGG ID. Details: {str(e)}"
-        else:
-            message = "Please provide a valid KEGG ID."
+        try:
+            # Process the input genes
+            gene_list = []
+            if genes_input:
+                # Split input genes by commas
+                gene_list = [gene.strip() for gene in genes_input.split(",")]
+            elif uploaded_file:
+                # Save the uploaded file and read the gene list from it
+                filename = secure_filename(uploaded_file.filename)
+                file_path = os.path.join("uploads", filename)
+                uploaded_file.save(file_path)
 
-    return render_template("kegg_tool.html", image=image, message=message)
+                # Read the file line by line to get gene names
+                with open(file_path, "r") as f:
+                    gene_list = [line.strip() for line in f.readlines()]
+
+            if not gene_list:
+                raise ValueError("No genes provided. Please enter genes or upload a file.")
+
+            # Map genes to KEGG IDs
+            gene_handler = GeneHandler(gene_list)
+            gene_to_kegg = gene_handler.get_kegg_ids()
+
+            if not gene_to_kegg:
+                raise ValueError("No KEGG IDs found for the provided genes.")
+
+            # Retrieve pathways for each KEGG ID
+            kegg_ids = list(gene_to_kegg.values())
+            kegg_to_pathways = gene_handler.get_pathway_ids(kegg_ids)
+
+            # Generate pathway maps (one map per KEGG ID for its first associated pathway)
+            pathway_generator = PathwayGenerator()
+            for kegg_id, pathways in kegg_to_pathways.items():
+                if pathways:
+                    pathway_id = pathways[0]  # Use the first pathway ID for each KEGG ID
+                    output_file = f"output/{kegg_id}_{pathway_id}.png"
+                    pathway_generator.save_pathway(pathway_id, output_file, [kegg_id])
+
+            result = f"Pathway maps generated successfully for the following genes: {', '.join(gene_list)}"
+
+        except Exception as e:
+            error = f"Error: {str(e)}"
+
+    return render_template("kegg_tool.html", result=result, error=error)
 
 
 if __name__ == '__main__':
-    # Setting debug to True will restart the server on each change
+    #app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions="app.py")
     app.run(debug=True)
 

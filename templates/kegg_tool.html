@@ -4,13 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KEGG_pull - Map My KEGG</title>
-    <script>
-        function showPopup() {
-            {% if number %}
-                alert("You entered the number: {{ number }}");
-            {% endif %}
-        }
-    </script>
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"
@@ -24,61 +17,37 @@
 </head>
 {% extends "base.html" %}
 {% block content %}
-<body onload="showPopup()">
 
 
     <!-- Main Container -->
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-sm-4">
-                <!-- Form Container Styled Like Other Boxes -->
-                <div class="frame_tool_top_left">
-                    <h1 class="center_text">Enter a Number</h1>
-                    <hr class="hr_border">
-                    <form method="POST" action="/kegg_tool">
-                        <label for="number" title="Enter a number to see it in a popup" class="form-label">
-                            Enter a Number:
-                        </label>
-                        <input type="number" id="number" name="number" class="form-control mb-3" required>
-                        <button type="submit" class="btn btn-primary w-100">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </div>
 
-        <!-- Existing Content -->
-        <div class="row justify-content-center">
-            <div class="col-sm-4">
-                <div class="frame_tool_top_left">
-                    <h1 class="center_text">KEGG_pull</h1>
-                    <hr class="hr_border">
-                    <a title="run one of the given commands down here">
-                        <p>Select the method that you want to use and adjust the optional parameters.</p>
-                    </a>
-                    <br>
-                    <button type="button" onclick="showModal('SinglePull')" class="btn btn-light">?</button>
-                    <label for="single_kegg_id" title="put the KEGG_ID you want the program to find in the KEGG database here">
-                        The KEGG_id to look for:
-                    </label>
+    <main class="container mt-5">
+        <!-- Page Title -->
+        <h1 class="text-center">KEGG Tool</h1>
+        <hr>
+        <p class="text-center">Use this tool to generate KEGG pathways based on the genes you provide.</p>
 
-                    <div class="input-group input-group-ml mb-3">
-                        <span class="input-group-text" id="single_keggs">Input Number</span>
-                        <input type="number" class="form-control" aria-label="Sizing example input" id="single_kegg_id"
-                               name="the_single_kegg_id">
-                    </div>
-                    <button type="button" onclick="showModal('SinglePull')" class="btn btn-light">?</button>
-                    <label for="multiple_kegg_id" title="put the KEGG_IDs you want the program to find in the KEGG database here">
-                        The KEGG_ids to look for:
-                    </label>
-                    <div class="input-group input-group-ml mb-3">
-                        <span class="input-group-text" id="multiple_keggs">Input Number</span>
-                        <input type="number" class="form-control" aria-label="Sizing example input" id="multiple_kegg_id"
-                               name="the_multiple_kegg_id">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        <!-- Input Form -->
+        <form method="POST" action="/kegg_tool">
+            <h2 class="text-center mb-4">Generate KEGG Pathways</h2>
+
+            <!-- Gene Input -->
+             <label for="genes" class="form-label">Enter Gene Names (comma-separated):</label>
+            <input type="text" id="genes" name="genes" class="form-control mb-3" required placeholder="e.g., BRCA1, TP53, MYC">
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100">Find KEGG Pathway</button>
+        </form>
+
+        <!-- Feedback Section -->
+        {% if result %}
+        <div class="alert alert-success mt-3 text-center">{{ result }}</div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alert alert-danger mt-3 text-center">{{ error }}</div>
+        {% endif %}
+    </main>
 
     <footer>
         <p>
@@ -88,4 +57,3 @@
 </body>
 </html>
 {% endblock %}
-
