@@ -47,6 +47,7 @@ def kegg_tool():
 
     if request.method == "POST":
         genes_input = request.form.get("genes")  # Text input field for genes
+        species = request.form.get("species") # Species dropdown
         uploaded_file = request.files.get("gene_file")  # File upload field
 
         try:
@@ -93,6 +94,11 @@ def kegg_tool():
             error = f"Error: {str(e)}"
 
     return render_template("kegg_tool.html", result=result, error=error)
+
+@app.route("/pathway")
+def generated_image_pathway():
+    """ Shows the generated KEGG pathway image on a new page."""
+    return render_template("pathway.html", image_path="static/output/output.png")
 
 
 if __name__ == '__main__':
