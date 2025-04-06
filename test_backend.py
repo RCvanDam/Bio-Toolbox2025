@@ -138,7 +138,7 @@ class TestKEGGHandler(unittest.TestCase):
 
         @patch('matplotlib.pyplot.savefig')  # Mock the savefig function
         @patch('networkx.draw')  # Mock the draw function
-         def test_create_graph(self, mock_draw, mock_savefig):
+        def test_create_graph(self, mock_draw, mock_savefig):
             """
             Test that the `create_graph` function runs without errors.
             """
