@@ -47,9 +47,14 @@ def kegg_tool():
 
     if request.method == "POST":
         genes_input = request.form.get("genes")  # Text input field for genes
+        species = request.form.get("species") # Species dropdown
         uploaded_file = request.files.get("gene_file")  # File upload field
 
         try:
+            # Validate species selection
+            if not species:
+                raise ValueError("No species selected. Please choose a species.")
+
             # Process the input genes
             gene_list = []
             if genes_input:
@@ -69,7 +74,7 @@ def kegg_tool():
                 raise ValueError("No genes provided. Please enter genes or upload a file.")
 
             # Map genes to KEGG IDs
-            gene_handler = GeneHandler(gene_list)
+            gene_handler = GeneHandler(gene_list, species)
             gene_to_kegg = gene_handler.get_kegg_ids()
 
             if not gene_to_kegg:
@@ -88,6 +93,7 @@ def kegg_tool():
                     pathway_generator.save_pathway(pathway_id, output_file, [kegg_id])
 
             result = f"Pathway maps generated successfully for the following genes: {', '.join(gene_list)}"
+
 
         except Exception as e:
             error = f"Error: {str(e)}"
