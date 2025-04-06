@@ -31,11 +31,7 @@
         <form method="POST" action="/kegg_tool">
             <h2 class="text-center mb-4">Generate KEGG Pathways</h2>
 
-            <!-- Gene Input -->
-             <label for="genes" class="form-label">Enter Gene Names (comma-separated):</label>
-            <input type="text" id="genes" name="genes" class="form-control mb-3" required placeholder="e.g., BRCA1, TP53, MYC">
-
-
+            <!-- Species Dropdown -->
             <label for="species" class="form-label">Choose a species:</label>
             <select id="species" name="species" class="form-select mb-3" required>
                 <option value="">-- Choose a species --</option>
@@ -45,6 +41,10 @@
                 <option value="eco">E. coli (Escherichia coli)</option>
                 <option value="sce">Yeast (Saccharomyces cerevisiae)</option>
             </select>
+
+            <!-- Gene Input -->
+             <label for="genes" class="form-label">Enter Gene Names (comma-separated):</label>
+            <input type="text" id="genes" name="genes" class="form-control mb-3" required placeholder="e.g., BRCA1, TP53, MYC">
 
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary w-100">Find KEGG Pathway</button>
