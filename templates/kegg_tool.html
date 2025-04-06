@@ -35,6 +35,17 @@
              <label for="genes" class="form-label">Enter Gene Names (comma-separated):</label>
             <input type="text" id="genes" name="genes" class="form-control mb-3" required placeholder="e.g., BRCA1, TP53, MYC">
 
+
+            <label for="species" class="form-label">Choose a species:</label>
+            <select id="species" name="species" class="form-select mb-3" required>
+                <option value="">-- Choose a species --</option>
+                <option value="hsa">Human (Homo sapiens)</option>
+                <option value="mmu">House Mouse (Mus musculus)</option>
+                <option value="rno">Rat (Rattus norvegicus)</option>
+                <option value="eco">E. coli (Escherichia coli)</option>
+                <option value="sce">Yeast (Saccharomyces cerevisiae)</option>
+            </select>
+
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary w-100">Find KEGG Pathway</button>
         </form>
