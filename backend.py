@@ -17,6 +17,7 @@ class GeneHandler:
         try:
             for gene in self.genes:
                 result = self.kegg_service.find("genes", gene)
+
                 if result:
                     for line in result.split("\n"):
                         if line.startswith("genes"):
