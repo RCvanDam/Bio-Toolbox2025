@@ -1,14 +1,19 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 from backend import GeneHandler, PathwayGenerator
 import os
+import glob
 
 # Initialize the Flask app
 app = Flask(__name__, template_folder="templates")
 
 # Ensure the "uploads" and "output" folders exist
-os.makedirs("uploads", exist_ok=True)
-os.makedirs("output", exist_ok=True)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+uploads_folder = os.path.join(script_dir, "uploads")
+output_folder = os.path.join(script_dir, "output")
+
+os.makedirs(uploads_folder, exist_ok=True)
+os.makedirs(output_folder, exist_ok=True)
 
 
 @app.route("/")
@@ -47,7 +52,7 @@ def kegg_tool():
 
     if request.method == "POST":
         genes_input = request.form.get("genes")  # Text input field for genes
-        species = request.form.get("species") # Species dropdown
+        species = request.form.get("species")  # Species dropdown
         uploaded_file = request.files.get("gene_file")  # File upload field
 
         try:
@@ -63,7 +68,7 @@ def kegg_tool():
             elif uploaded_file:
                 # Save the uploaded file and read the gene list from it
                 filename = secure_filename(uploaded_file.filename)
-                file_path = os.path.join("uploads", filename)
+                file_path = os.path.join(uploads_folder, filename)
                 uploaded_file.save(file_path)
 
                 # Read the file line by line to get gene names
@@ -89,16 +94,55 @@ def kegg_tool():
             for kegg_id, pathways in kegg_to_pathways.items():
                 if pathways:
                     pathway_id = pathways[0]  # Use the first pathway ID for each KEGG ID
-                    output_file = f"output/{kegg_id}_{pathway_id}.png"
-                    pathway_generator.save_pathway(pathway_id, output_file, [kegg_id])
+                    pathway_generator.save_pathway(pathway_id, [kegg_id], output_folder)
 
             result = f"Pathway maps generated successfully for the following genes: {', '.join(gene_list)}"
-
-
         except Exception as e:
             error = f"Error: {str(e)}"
 
     return render_template("kegg_tool.html", result=result, error=error)
+
+
+@app.route("/pathway")
+def generated_image_pathway():
+    """Shows the most recent KEGG pathway image on a new page."""
+    # Find the latest PNG file in the output directory
+    png_files = sorted(
+        glob.glob(os.path.join(output_folder, "*.png")),
+        key=os.path.getmtime,
+        reverse=True
+    )
+
+    # Get the path to the most recent PNG file
+    image_path = None
+    if png_files:
+        image_path = f"/output{os.path.basename(png_files[0])}"  # Use the output route
+
+    # Render the template with the image path
+    return render_template("pathway.html", image_path=image_path)
+
+
+@app.route("/latest_image")
+def latest_image():
+    """Serves the most recent KEGG pathway image as a file stream."""
+    try:
+        # Find the latest PNG file in the output directory
+        png_files = sorted(
+            glob.glob(os.path.join(output_folder, "*.png")),
+            key=os.path.getmtime,
+            reverse=True
+        )
+
+        if png_files:
+            latest_image_path = png_files[0]
+            # Serve the image as a file stream
+            return send_file(latest_image_path, mimetype="image/png")
+
+        # If no PNG files are found
+        return "No images found in the output folder.", 404
+
+    except Exception as e:
+        return f"Error: {str(e)}", 500
 
 
 if __name__ == '__main__':

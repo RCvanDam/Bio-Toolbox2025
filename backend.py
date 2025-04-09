@@ -94,27 +94,26 @@ class PathwayGenerator:
         """
         self.base_url = "http://rest.kegg.jp"
 
-    def save_pathway(self, pathway_id, file_name, highlighted_genes):
+    def save_pathway(self, pathway_id, highlighted_genes, output_folder: str):
         """
         Fetches and saves pathway map data using the KEGG REST API.
 
         Args:
-            pathway_id (str): KEGG pathway ID.
-            file_name (str): Name of the output file (e.g., 'hsa04137.png').
+            pathway_id (str): KEGG pathway ID (e.g., 'hsa04137').
             highlighted_genes (list): List of KEGG IDs to highlight (currently unused).
+            output_folder: folder where png is stored
 
         Raises:
             Exception: If there is an error retrieving or saving the pathway map.
         """
         try:
-            # Ensure the output folder exists
-            output_folder = "output"
-            os.makedirs(output_folder, exist_ok=True)
+            # Get the directory of the script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
 
-            # Sanitize the file name
-            sanitized_file_name = ''.join(
-                c if c.isalnum() or c in ['_', '.'] else '_' for c in file_name
-            )
+            # Use the pathway ID as the file name
+            sanitized_file_name = f"{pathway_id}.png"
+
+            # Define the full output path
             output_path = os.path.join(output_folder, sanitized_file_name)
 
             # Fetch pathway details from the KEGG REST API
@@ -133,6 +132,11 @@ class PathwayGenerator:
                 with open(fallback_path, "w") as f:
                     f.write(response.text)
         except Exception as e:
+            # Use the pathway ID as the file name
+            sanitized_file_name = f"{pathway_id}.png"
+
+            output_path = os.path.join(output_folder, sanitized_file_name)
             fallback_path = output_path.replace(".png", "_error.txt")
+
             with open(fallback_path, "w") as f:
                 f.write(f"Error retrieving pathway map: {str(e)}")
