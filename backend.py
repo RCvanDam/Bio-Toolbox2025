@@ -96,7 +96,7 @@ class PathwayGenerator:
         """
         try:
             # Ensure the `output` folder exists
-            output_folder = "output"
+            output_folder = "static/output"
             os.makedirs(output_folder, exist_ok=True)
 
             # Build the full path for the output file

@@ -105,7 +105,7 @@ class TestKEGGHandler(unittest.TestCase):
 
             # Use a  KEGG ID that usually works
             kegg_id = "hsa00010"
-            output_file = "output/test_graph.png"
+            output_file = "static/output/test_graph.png"
 
             # Run the function
             backend.process_request(kegg_id, output_file)
