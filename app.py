@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 from backend import GeneHandler, PathwayGenerator
 import os
-from werkzeug.middleware.profiler import ProfilerMiddleware
 # Initialize the Flask app
 app = Flask(__name__, template_folder="templates")
 
@@ -47,9 +46,14 @@ def kegg_tool():
 
     if request.method == "POST":
         genes_input = request.form.get("genes")  # Text input field for genes
+        species = request.form.get("species") # Species dropdown
         uploaded_file = request.files.get("gene_file")  # File upload field
 
         try:
+            # Validate species selection
+            if not species:
+                raise ValueError("No species selected. Please choose a species.")
+
             # Process the input genes
             gene_list = []
             if genes_input:
@@ -69,7 +73,7 @@ def kegg_tool():
                 raise ValueError("No genes provided. Please enter genes or upload a file.")
 
             # Map genes to KEGG IDs
-            gene_handler = GeneHandler(gene_list)
+            gene_handler = GeneHandler(gene_list, species)
             gene_to_kegg = gene_handler.get_kegg_ids()
 
             if not gene_to_kegg:
@@ -89,6 +93,7 @@ def kegg_tool():
             ]
             result = f"Pathway maps generated successfully for the following genes: {', '.join(gene_list)}"
 
+
         except Exception as e:
             error = f"Error: {str(e)}"
 
@@ -96,5 +101,4 @@ def kegg_tool():
 
 
 if __name__ == '__main__':
-    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, profile_dir=os.path.join(os.getcwd(), "profiler_output"), restrictions=["kegg_home", "about", "contact", "kegg_tool"])
     app.run(debug=True)
