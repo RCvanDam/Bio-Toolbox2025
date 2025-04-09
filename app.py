@@ -2,7 +2,6 @@ from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 from backend import GeneHandler, PathwayGenerator
 import os
-
 # Initialize the Flask app
 app = Flask(__name__, template_folder="templates")
 
@@ -86,12 +85,12 @@ def kegg_tool():
 
             # Generate pathway maps (one map per KEGG ID for its first associated pathway)
             pathway_generator = PathwayGenerator()
-            for kegg_id, pathways in kegg_to_pathways.items():
-                if pathways:
-                    pathway_id = pathways[0]  # Use the first pathway ID for each KEGG ID
-                    output_file = f"output/{kegg_id}_{pathway_id}.png"
-                    pathway_generator.save_pathway(pathway_id, output_file, [kegg_id])
-
+            [
+            pathway_generator.save_pathway(pathways[0],f"output/{kegg_id}_{pathways[0]}.png",
+            [kegg_id])
+            for kegg_id, pathways in kegg_to_pathways.items()
+            if pathways
+            ]
             result = f"Pathway maps generated successfully for the following genes: {', '.join(gene_list)}"
 
 
