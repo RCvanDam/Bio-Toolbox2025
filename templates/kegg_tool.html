@@ -18,9 +18,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-
     <!-- Main Container -->
-
     <main class="container mt-5">
         <!-- Page Title -->
         <h1 class="text-center">KEGG Tool</h1>
@@ -28,11 +26,22 @@
         <p class="text-center">Use this tool to generate KEGG pathways based on the genes you provide.</p>
 
         <!-- Input Form -->
-        <form method="POST" action="/kegg_tool">
+        <form method="POST" action="/kegg_tool" enctype="multipart/form-data">
             <h2 class="text-center mb-4">Generate KEGG Pathways</h2>
 
+            <!-- Species Dropdown -->
+            <label for="species" class="form-label">Choose a species:</label>
+            <select id="species" name="species" class="form-select mb-3" required>
+                <option value="">-- Choose a species --</option>
+                <option value="hsa">Human (Homo sapiens)</option>
+                <option value="mmu">House Mouse (Mus musculus)</option>
+                <option value="rno">Rat (Rattus norvegicus)</option>
+                <option value="eco">E. coli (Escherichia coli)</option>
+                <option value="sce">Yeast (Saccharomyces cerevisiae)</option>
+            </select>
+
             <!-- Gene Input -->
-             <label for="genes" class="form-label">Enter Gene Names (comma-separated):</label>
+            <label for="genes" class="form-label">Enter Gene Names (comma-separated):</label>
             <input type="text" id="genes" name="genes" class="form-control mb-3" required placeholder="e.g., BRCA1, TP53, MYC">
 
             <!-- Submit Button -->
@@ -49,11 +58,5 @@
         {% endif %}
     </main>
 
-    <footer>
-        <p>
-            &copy; 2025 Map My KEGG. All rights reserved.
-        </p>
-    </footer>
-</body>
 </html>
 {% endblock %}
