@@ -23,7 +23,8 @@
         <!-- Page Title -->
         <h1 class="text-center">KEGG Tool</h1>
         <hr>
-        <p class="text-center">Use this tool to generate KEGG pathways based on the genes you provide.</p>
+        <p class="text-center">Use this tool to generate KEGG pathways based on the genes you provide. <br>
+        note this might take a while please wait for the green box saying it was succesful before pressing the output button</p>
 
         <!-- Input Form -->
         <form method="POST" action="/kegg_tool" enctype="multipart/form-data">
@@ -46,6 +47,9 @@
 
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary w-100">Find KEGG Pathway</button>
+
+            <!-- Output Button -->
+            <a href="/pathway" class="btn btn-secondary mt-3 w-100">Output</a>
         </form>
 
         <!-- Feedback Section -->

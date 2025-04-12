@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="container mt-5">
+    <h2>Pathway Image </h2>
+    <hr>
+    <br>
+    {% if image_path %}
+        <img src="{{ url_for('latest_image') }}" class="img-fluid" alt="KEGG Pathway">
+    {% else %}
+        <p>No image found.</p>
+    {% endif %}
+    <br>
+    <br>
+    <a href="{{ url_for('kegg_tool') }}" class="cta-button">Search another gene</a>
+</main>
+{% endblock %}
