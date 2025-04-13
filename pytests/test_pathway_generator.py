@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import patch, Mock
 from backend import PathwayGenerator  # Import the PathwayGenerator class from backend.py
 import os
 
@@ -13,18 +12,17 @@ def pathway_generator():
     return PathwayGenerator()
 
 
-@patch("backend.requests.get")
-def test_save_pathway_image(mock_get, pathway_generator, tmp_path):
+def test_save_pathway_image(mocker, pathway_generator, tmp_path):
     """
     Test the save_pathway method when the response is a valid PNG image.
     This verifies that pathway images are correctly saved to the output folder.
     """
     # Simulate a successful API response with PNG content
-    mock_response = Mock()
+    mock_response = mocker.Mock()
     mock_response.status_code = 200
     mock_response.headers = {"Content-Type": "image/png"}  # Response header indicates PNG content
     mock_response.iter_content = lambda chunk_size: [b"testimagechunk"]  # Simulated image content
-    mock_get.return_value = mock_response  # Use the mocked response
+    mocker.patch("backend.requests.get", return_value=mock_response)  # Mock the requests.get function
 
     # Define test parameters
     pathway_id = "hsa04137"  # Example pathway ID
@@ -39,18 +37,17 @@ def test_save_pathway_image(mock_get, pathway_generator, tmp_path):
     assert content == b"testimagechunk"  # Verify the file content matches the mocked response
 
 
-@patch("backend.requests.get")
-def test_save_pathway_fallback_to_text(mock_get, pathway_generator, tmp_path):
+def test_save_pathway_fallback_to_text(mocker, pathway_generator, tmp_path):
     """
     Test the save_pathway method when the response is not an image.
     This verifies the fallback behavior where the response is saved as a text file.
     """
     # Simulate a successful API response with non-image content
-    mock_response = Mock()
+    mock_response = mocker.Mock()
     mock_response.status_code = 200
     mock_response.headers = {"Content-Type": "text/plain"}  # Response header indicates text content
     mock_response.text = "This is a fallback pathway description."  # Simulated text content
-    mock_get.return_value = mock_response  # Use the mocked response
+    mocker.patch("backend.requests.get", return_value=mock_response)  # Mock the requests.get function
 
     # Define test parameters
     pathway_id = "hsa04137"  # Example pathway ID
@@ -65,14 +62,13 @@ def test_save_pathway_fallback_to_text(mock_get, pathway_generator, tmp_path):
     assert content == "This is a fallback pathway description."  # Verify the file content matches the mocked response
 
 
-@patch("backend.requests.get")
-def test_save_pathway_error_handling(mock_get, pathway_generator, tmp_path):
+def test_save_pathway_error_handling(mocker, pathway_generator, tmp_path):
     """
     Test the save_pathway method when an exception occurs during the request.
     This verifies the error-handling behavior and checks that the error is logged to a file.
     """
     # Simulate a network exception
-    mock_get.side_effect = Exception("Network Error")  # Raise an exception for the mocked request
+    mocker.patch("backend.requests.get", side_effect=Exception("Network Error"))  # Raise an exception for the mocked request
 
     # Define test parameters
     pathway_id = "hsa04137"  # Example pathway ID
