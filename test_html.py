@@ -1,110 +1,160 @@
-import unittest
-from unittest.mock import patch
-from app import app  # Import your Flask app here
 import pytest
-import html5lib
+from app import app
+
+@pytest.fixture
+def client():
+    """Provides a test client for the Flask app"""
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
 
 
-class KeggToolTestCase(unittest.TestCase):
-    """
-    Unit tests for the `/kegg_tool` route of the Flask application.
-    This test suite covers:
-    - GET request for rendering the tool page.
-    - POST request for processing KEGG IDs.
-    - Error handling for invalid or failed backend processing.
-    """
+def test_base_structure(client):
+    """Checks that common navbar elements are present on all implemented pages"""
+    # List of routes that should be implemented
+    pages = ['/', '/about', '/contact', '/kegg_tool']
 
-    def initialize_resources(self):
-        """
-        Sets up the test client for the Flask application.
-        The test client simulates HTTP requests to the `/kegg_tool` route.
-        """
-        self.app = app.test_client()
-        self.app.testing = True
+    for page in pages:
+        response = client.get(page)
+        # Verify the page loads successfully
+        assert response.status_code == 200, f"Failed to load {page}"
 
-    def test_kegg_tool_route_get(self):
-        """
-        Test the `/kegg_tool` route (GET method).
-        Ensures that the page loads successfully with status code 200
-        and contains the expected form fields for input.
-        """
-        response = self.app.get('/kegg_tool')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b"KEGG ID to Look For", response.data)
-
-    @patch('app.backend.process_request')  # Mocking the backend
-    def test_kegg_tool_route_post(self, mock_process_request):
-        """
-        Test form submission on the `/kegg_tool` route (POST method).
-        Simulates a valid form submission with a single KEGG ID
-        and mocks successful backend processing.
-        """
-        mock_process_request.return_value = None  # Mock successful processing
-
-        response = self.app.post('/kegg_tool', data={'single_kegg_id': 'hsa:1234'})
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Pathway visualization generated successfully!", response.data)
-
-    @patch('app.backend.process_request')  # Mocking the backend
-    def test_kegg_tool_route_post_error(self, mock_process_request):
-        """
-        Test form submission on the `/kegg_tool` route (POST method).
-        Simulates a form submission where the backend raises an exception
-        to test error handling.
-        """
-        mock_process_request.side_effect = Exception("Backend error")  # Mock exception
-
-        response = self.app.post('/kegg_tool', data={'single_kegg_id': 'hsa:1234'})
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Error: Unable to process the KEGG ID", response.data)
+        # Check if the navigation bar and expected links are included
+        assert b'<div class="navbar">' in response.data
+        assert b'<a href="/">Home</a>' in response.data
+        assert b'<a href="/kegg_tool">KEGG Tools</a>' in response.data
+        assert b'<a href="/about">About Us</a>' in response.data
+        assert b'<a href="/contact">Contact Info</a>' in response.data
 
 
-class TestAboutPage(unittest.TestCase):
-    def setUp(self):
-        # Use the imported app instance for testing
-        app.config['TESTING'] = True
-        self.client = app.test_client()  # Create a test client
+def test_home_page(client):
+    """Checks that the home page includes key content and questions"""
+    response = client.get('/')
 
-    def test_about_page_loads(self):
-        """
-        Test that the /about page loads correctly and contains expected content.
-        """
-        response = self.client.get('/about')
+    # Content that should always appear on the home page
+    content_checks = [
+        b"Map My KEGG",
+        b"What is Map My KEGG?",
+        b"Explore Tools",
+        b"https://www.genome.jp/kegg/docs/fig/kegg_model.png",
+    ]
 
-        # Check the response status code
-        self.assertEqual(response.status_code, 200)
+    for content in content_checks:
+        assert content in response.data, f"Missing content: {content}"
 
-        # Check for specific content in the HTML response (as bytes)
-        self.assertIn(b'Behind Map My KEGG', response.data)
-        self.assertIn(b'Who Are We?', response.data)
-        self.assertIn(b'Our Vision', response.data)
-        self.assertIn(b'What We Offer', response.data)
-        self.assertIn(b'The Tools We Use', response.data)
-        self.assertIn(b'Explore Tools', response.data)
+    # Verify that questions are shown on the home page
+    expected_questions = [
+        "Which genes are involved in specific biological pathways and processes?",
+        "How are certain metabolic pathways organized, and which enzymes play a role in them?",
+        "What are the orthologous genes of different species for a given function?",
+        "How can experimental data (e.g., gene expression) be integrated with known biological pathways?",
+        "What molecular mechanisms underlie certain diseases?"
+    ]
+
+    for question in expected_questions:
+        assert question.encode() in response.data, f"Question not found: {question}"
 
 
-    @pytest.fixture
-    def client(self):
-        return app.test_client()
+def test_about_page(client):
+    """Checks that the about page contains section headings, tools, and a CTA link"""
+    response = client.get('/about')
+
+    content_checks = [
+        b"Behind Map My KEGG",
+        b"Who Are We?",
+        b"Our Vision",
+        b"What We Offer",
+        b"The Tools We Use",
+        b"KEGG Pull",
+        b"KEGG Mapper",
+        b'<a href="/kegg_tool" class="cta-button">'
+    ]
+
+    for content in content_checks:
+        assert content in response.data, f"Missing content: {content}"
 
 
-    def test_root(client):
-        response = client.get('/')
+def test_contact_page(client):
+    """Verifies that the contact page lists all team members and includes their GitHub links"""
+    response = client.get('/contact')
+
+    content_checks = [
+        b"Contact Us",
+        b"Our Team",
+        b"Emiel Bosma",
+        b"Michelle Hazeveld",
+        b"Keren Saint Fleur",
+        b"Ruben van Dam",
+        b"GitHub: emielbosma",
+        b"GitHub: michellehazeveld",
+        b"GitHub: Keren8272",
+        b"GitHub: RCvanDam"
+    ]
+
+    for content in content_checks:
+        assert content in response.data, f"Missing content: {content}"
+
+    # Confirm that exactly four contact cards are rendered
+    assert response.data.count(b'contact-card') == 4
+
+
+def test_kegg_tool_page(client):
+    """Checks that the KEGG tool page includes form fields and species options"""
+    response = client.get('/kegg_tool')
+
+    # Check for the presence of form elements and key labels
+    content_checks = [
+        b"KEGG Tool",
+        b"Generate KEGG Pathways",
+        b"Choose a species:",
+        b"Enter Gene Names",
+        b"Find KEGG Pathway",
+        b'<form method="POST"'
+    ]
+
+    for content in content_checks:
+        assert content in response.data, f"Missing content: {content}"
+
+    # Check that all predefined species options are available in the dropdown
+    species_options = [
+        b"Human (Homo sapiens)",
+        b"House Mouse (Mus musculus)",
+        b"Rat (Rattus norvegicus)",
+        b"E. coli (Escherichia coli)",
+        b"Yeast (Saccharomyces cerevisiae)"
+    ]
+
+    for option in species_options:
+        assert option in response.data, f"Missing species option: {option}"
+
+
+def test_kegg_tool_form_submission(client):
+    """Sends example POST requests to the KEGG form and checks for feedback messages"""
+    test_cases = [
+        {'species': 'hsa', 'genes': 'BRCA1, TP53'},
+        {'species': 'mmu', 'genes': 'Trp53, Brca1'},
+    ]
+
+    for case in test_cases:
+        response = client.post('/kegg_tool', data=case)
+
+        # Should return a successful page load regardless of KEGG response
         assert response.status_code == 200
-        try:
-            parser = html5lib.HTMLParser(strict=True, namespaceHTMLElements=False)
-            htmldoc = parser.parse(response.data)
-        except html5lib.html5parser.ParseError as error:
-            pytest.fail(f'{error.__class__.__name__}: {str(error)}', pytrace=False)
-        items = htmldoc.findall(".div/ul")
 
-        questions_list = []
-        for item in items:
-            questions_list.append(item.find(".question").text)
-        return questions_list
-        assert questions_list == {"Which genes are involved in specific biological pathways and processes?", "How are certain metabolic pathways organized, and which enzymes play a role in them?", "What are the orthologous genes of different species for a given function? How can experimental data (e.g., gene expression) be integrated with known biological pathways?",
-        "What molecular mechanisms underlie certain diseases?", "Which biochemical reactions are related to specific chemical compounds or enzymes?"}
+        # Ensure either success or error feedback is shown
+        assert (b"alert alert-success" in response.data) or (b"alert alert-danger" in response.data)
 
 
-if __name__ == '__main__':
-    unittest.main()
+def test_page_titles(client):
+    """Verifies that each page contains the correct <title> tag text"""
+    pages = {
+        '/'         : b'Map My KEGG',
+        '/about'    : b'Behind Map My KEGG',
+        '/contact'  : b'Contact Us',
+        '/kegg_tool': b'KEGG_pull - Map My KEGG'
+    }
+
+    for path, title in pages.items():
+        response = client.get(path)
+        # Look for the expected title text inside the page HTML
+        assert title in response.data, f"Missing title {title} on {path}"
